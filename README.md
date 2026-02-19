@@ -271,8 +271,8 @@ mvn test jacoco:report
 
 **Yassine Ben Rejeb**
 - Email: benrejeb98@gmail.com
-- GitHub: [@bryessine](https://github.com/bryessine)
-- LinkedIn: [Votre profil LinkedIn]
+- GitHub: [@Yessine98](https://github.com/Yessine98)
+- LinkedIn: https://www.linkedin.com/in/yassine-ben-rejeb/
 - Téléphone: +216 54 190 235
 
 ## 📄 Licence
