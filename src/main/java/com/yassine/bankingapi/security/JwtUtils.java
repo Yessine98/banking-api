@@ -1,4 +1,3 @@
-/*
 package com.yassine.bankingapi.security;
 
 import io.jsonwebtoken.*;
@@ -52,4 +51,3 @@ public class JwtUtils {
         }
     }
 }
-*/

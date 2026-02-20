@@ -2,10 +2,15 @@ package com.yassine.bankingapi.service;
 
 import com.yassine.bankingapi.dto.CustomerDTO;
 import com.yassine.bankingapi.dto.CustomerResponse;
+import com.yassine.bankingapi.dto.PageResponse;
 import com.yassine.bankingapi.exception.BadRequestException;
 import com.yassine.bankingapi.exception.ResourceNotFoundException;
 import com.yassine.bankingapi.model.Customer;
 import com.yassine.bankingapi.repository.CustomerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,18 +102,49 @@ public class CustomerService {
     }
 
     /**
+     * Récupérer tous les clients avec pagination
+     */
+    public PageResponse<CustomerResponse> getAllCustomersPaginated(int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") 
+                ? Sort.by(sortBy).descending() 
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Customer> customerPage = customerRepository.findAll(pageable);
+        
+        List<CustomerResponse> responses = customerPage.getContent().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        
+        return PageResponse.from(customerPage, responses);
+    }
+
+    /**
+     * Rechercher des clients par mot-clé (nom ou email)
+     */
+    public List<CustomerResponse> searchCustomers(String keyword) {
+        return customerRepository.searchByKeyword(keyword).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Rechercher des clients par mot-clé avec pagination
+     */
+    public PageResponse<CustomerResponse> searchCustomersPaginated(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("lastName").ascending());
+        Page<Customer> customerPage = customerRepository.searchByKeyword(keyword, pageable);
+        
+        List<CustomerResponse> responses = customerPage.getContent().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        
+        return PageResponse.from(customerPage, responses);
+    }
+
+    /**
      * Mapper Customer vers CustomerResponse
      */
     private CustomerResponse mapToResponse(Customer customer) {
-        CustomerResponse response = new CustomerResponse();
-        response.setId(customer.getId());
-        response.setFirstName(customer.getFirstName());
-        response.setLastName(customer.getLastName());
-        response.setEmail(customer.getEmail());
-        response.setPhoneNumber(customer.getPhoneNumber());
-        response.setAddress(customer.getAddress());
-        response.setCreatedAt(customer.getCreatedAt());
-        response.setUpdatedAt(customer.getUpdatedAt());
-        return response;
+        return CustomerResponse.fromCustomer(customer);
     }
 }

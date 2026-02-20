@@ -1,4 +1,3 @@
-/*
 package com.yassine.bankingapi.security;
 
 import com.yassine.bankingapi.model.User;
@@ -32,4 +31,3 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 }
-*/
